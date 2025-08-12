@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debrid Link Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <h1>Debrid Link Generator</h1>
+    <input type="url" id="urlInput" placeholder="Enter file hosting URL">
+    <button onclick="generateLink()">Generate Link</button>
+    <div id="result"></div>
+
+    <script>
+    async function generateLink() {
+        const url = document.getElementById('urlInput').value;
+        const result = document.getElementById('result');
+        
+        if (!url) {
+            result.innerHTML = 'Please enter a URL';
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/json?url=${encodeURIComponent(url)}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                result.innerHTML = `
+                    <h3>Success!</h3>
+                    <p><strong>File:</strong> ${data.filename}</p>
+                    <p><strong>Size:</strong> ${data.size_mb} MB</p>
+                    <p><strong>Download:</strong> <a href="${data.download_url}" target="_blank">Click here</a></p>
+                `;
+            } else {
+                result.innerHTML = `<p style="color:red">Error: ${data.error}</p>`;
+            }
+        } catch (error) {
+            result.innerHTML = `<p style="color:red">Error: ${error.message}</p>`;
+        }
+    }
+    </script>
+</body>
+</html>
